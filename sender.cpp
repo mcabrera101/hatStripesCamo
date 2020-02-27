@@ -34,7 +34,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    may have the same key.
 	 */
 
-
+	printf("Generating key\n");
 	key_t key = ftok("keyfile.txt", 'a');
 
 	
@@ -43,8 +43,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: Attach to the message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	
+	printf("Getting shared memory ID\n");
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, IPC_CREAT);
+
+	printf("Attaching to shared memory\n");
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
+
+	printf("Attaching to message queue\n");
 	msqid = msgget(key, IPC_CREAT);
 
 }
@@ -59,6 +64,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
+	printf("Detaching from shared memory...\n");
 	shmdt(sharedMemPtr);
 }
 
@@ -78,7 +84,7 @@ void send(const char* fileName)
 	/* A buffer to store message received from the receiver. */
 	message rcvMsg;
 	
-	/* Was the file open? */
+	/* Was the file opened? */
 	if(!fp)
 	{
 		perror("fopen");
@@ -103,20 +109,25 @@ void send(const char* fileName)
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
 		
+		printf("Sending message\n");
 		msgsnd(msqid, &sndMsg, sizeof(message), 0);
 		
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
 
-		//msgrcv( , , , );
+		printf("Waiting for message...\n");
+		msgrcv(msqid, &rcvMsg, sizeof(message), 1, 0);
+		printf("Message received\n");
 	}
 	
 
 	/** TODO: once we are out of the above loop, we have finished sending the file.
- 	  * Lets tell the receiver that we have nothing more to send. We will do this by
+ 	  * Let's tell the receiver that we have nothing more to send. We will do this by
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
 	  */
+
+	msgsnd(msqid, &sndMsg, sizeof(message), 0);
 
 		
 	/* Close the file */
@@ -136,12 +147,15 @@ int main(int argc, char** argv)
 	}
 		
 	/* Connect to shared memory and the message queue */
+	printf("~Calling init~\n");
 	init(shmid, msqid, sharedMemPtr);
 	
 	/* Send the file */
+	printf("~Calling send~\n");
 	send(argv[1]);
 	
 	/* Cleanup */
+	printf("~Calling cleanUp~\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
 		
 	return 0;
