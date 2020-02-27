@@ -44,13 +44,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	
 	printf("Getting shared memory ID\n");
-	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, IPC_CREAT);
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
 	printf("Attaching to shared memory\n");
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
 
 	printf("Attaching to message queue\n");
-	msqid = msgget(key, IPC_CREAT);
+	msqid = msgget(key, 0666 | IPC_CREAT);
 
 }
 
@@ -110,14 +110,14 @@ void send(const char* fileName)
  		 */
 		
 		printf("Sending message\n");
-		msgsnd(msqid, &sndMsg, sizeof(message), 0);
+		msgsnd(msqid, &sndMsg, sndMsg.size, 0);
 		
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
 
 		printf("Waiting for message...\n");
-		msgrcv(msqid, &rcvMsg, sizeof(message), 1, 0);
+		msgrcv(msqid, &rcvMsg, rcvMsg.size, 1, 0);
 		printf("Message received\n");
 	}
 	
@@ -127,8 +127,7 @@ void send(const char* fileName)
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0. 	
 	  */
 
-	msgsnd(msqid, &sndMsg, sizeof(message), 0);
-
+	msgsnd(msqid, &sndMsg, sndMsg.size, 0);
 		
 	/* Close the file */
 	fclose(fp);

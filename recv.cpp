@@ -41,6 +41,8 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    may have the same key.
 	 */
 	
+	printf("Generating key\n");
+	key_t key = ftok("keyfile.txt", 'a');
 
 	
 	/* TODO: Allocate a piece of shared memory. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE. */
