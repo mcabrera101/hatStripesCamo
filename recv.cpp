@@ -50,6 +50,9 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: Create a message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	
+	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, IPC_CREAT);
+	sharedMemPtr = shmat(shmid, (void*)0, 0);
+	msqid = msgget(key, 0666 | IPC_CREAT);
 }
  
 
@@ -101,6 +104,8 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case). 
  			 */
+
+			
 		}
 		/* We are done */
 		else
