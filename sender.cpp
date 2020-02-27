@@ -103,13 +103,13 @@ void send(const char* fileName)
  		 * (message of type SENDER_DATA_TYPE) 
  		 */
 		
-		msgsend(msqid, &sndMsg, sizeof(message), 0);
+		msgsnd(msqid, &sndMsg, sizeof(message), 0);
 		
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us 
  		 * that he finished saving the memory chunk. 
  		 */
 
-		msgrcv( , , , );
+		//msgrcv( , , , );
 	}
 	
 
