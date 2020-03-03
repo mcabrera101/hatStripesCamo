@@ -90,7 +90,8 @@ void mainLoop()
      * "recvfile"
      */
 	
-	
+	message rcvMsg = msgrcv(msqid, &message, sizeof(message), 1, 0);
+	msgSize = sizeof(rcvMsg);
 
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
@@ -159,7 +160,7 @@ void ctrlCSignal(int signal)
 int main(int argc, char** argv)
 {
 	
-	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
+	/* TODO: Install a signal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().

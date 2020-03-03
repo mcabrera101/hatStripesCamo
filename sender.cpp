@@ -42,11 +42,11 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	printf("Getting shared memory ID\n");
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
-    /* TODO: Attach to the shared memory */
+   	/* TODO: Attach to the shared memory */
 	printf("Attaching to shared memory\n");
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
 
-    /* TODO: Attach to the message queue */
+   	/* TODO: Attach to the message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	printf("Attaching to message queue\n");
 	msqid = msgget(key, 0666 | IPC_CREAT);
