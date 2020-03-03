@@ -1,6 +1,8 @@
 # Prerequisites
 *.d
 
+recvfile.txt
+
 # Compiled Object files
 *.slo
 *.lo
