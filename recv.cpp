@@ -50,8 +50,13 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* TODO: Create a message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	
+	printf("Getting shared memory ID\n");
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, IPC_CREAT);
+
+	printf("Attaching to shared memory\n");
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
+
+	printf("Attaching to message queue\n");
 	msqid = msgget(key, 0666 | IPC_CREAT);
 }
  
@@ -84,6 +89,8 @@ void mainLoop()
      * NOTE: the received file will always be saved into the file called
      * "recvfile"
      */
+	
+	
 
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
@@ -105,7 +112,8 @@ void mainLoop()
  			 * does not matter in this case). 
  			 */
 
-			
+			printf("Sending message\n");
+			msgsnd(msqid, &sndMsg, msgSize, 0);
 		}
 		/* We are done */
 		else
@@ -128,10 +136,13 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
-	
+	printf("Detaching from shared memory...\n");
+	shmdt(sharedMemPtr);
+
 	/* TODO: Deallocate the shared memory chunk */
 	
 	/* TODO: Deallocate the message queue */
+
 }
 
 /**
