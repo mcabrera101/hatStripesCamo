@@ -51,7 +51,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	printf("Attaching to message queue\n");
 	msqid = msgget(key, 0666 | IPC_CREAT);
 
-    printf("Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
+    printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
 }
 
 /**
