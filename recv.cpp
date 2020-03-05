@@ -94,6 +94,8 @@ void mainLoop()
 	message rcvMsg;
 	rcvMsg.mtype = SENDER_DATA_TYPE;
 	rcvMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp);
+	//printf("Receiver:");
+	//rcvMsg.print(fp);
 
 	message sndMsg;
 	
@@ -145,10 +147,13 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
+	printf("Detaching from memory\n");
 	shmdt(sharedMemPtr);
 	/* TODO: Deallocate the shared memory chunk */
+	printf("Deallocating from shared memory\n");
 	shmctl(shmid,IPC_RMID,NULL);
 	/* TODO: Deallocate the message queue */
+	printf("Deallocating message queue\n");
 	msgctl(msqid,IPC_RMID,NULL);
 }
 
@@ -174,14 +179,9 @@ int main(int argc, char** argv)
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
-<<<<<<< HEAD
  	 */
 	signal(SIGINT, ctrlCSignal); 
-=======
- 	 */	
-	signal(SIGINT, signalHandlerFunc); 
 
->>>>>>> f47e1f47791ffdff125a8ce2d21ac377413e7055
 
 	/* Initialize */
 	printf("~Calling recv main~\n");

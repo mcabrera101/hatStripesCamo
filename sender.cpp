@@ -128,6 +128,8 @@ void send(const char* fileName)
 	sndMsg.mtype = SENDER_DATA_TYPE;
 	sndMsg.size = 0;
 	msgsnd(msqid, &sndMsg, sndMsg.size, 0);
+	//printf("Sender:");
+	
 
 	/* Close the file */
 	fclose(fp);
