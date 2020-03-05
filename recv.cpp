@@ -40,8 +40,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-
-     printf("Generating key\n");
+        printf("Generating key\n");
  	key_t key = ftok("keyfile.txt", 'a');
 
 
@@ -90,12 +89,14 @@ void mainLoop()
      * NOTE: the received file will always be saved into the file called
      * "recvfile"
      */
-	message sndMsg;
 	message rcvMsg;
+	rcvMsg.mtype = SENDER_DATA_TYPE;
+	rcvMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp);
+
+	message sndMsg;
 	
 	//Receiving message from sender
 	msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), 1, 0);
-	msgSize = sizeof(rcvMsg);
 
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
@@ -116,6 +117,7 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case).
  			 */
+			sndMsg.mtype = RECV_DONE_TYPE;
 			msgsnd(msqid, &sndMsg, sndMsg.size, 0);
 
 
@@ -141,11 +143,11 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
-		shmdt(sharedMemPtr);
+	shmdt(sharedMemPtr);
 	/* TODO: Deallocate the shared memory chunk */
-		shmctl(shmid,IPC_RMID,NULL);
+	shmctl(shmid,IPC_RMID,NULL);
 	/* TODO: Deallocate the message queue */
-		msgctl(msqid,IPC_RMID,NULL);
+	msgctl(msqid,IPC_RMID,NULL);
 }
 
 /**
@@ -161,21 +163,21 @@ void ctrlCSignal(int signal)
 
 int main(int argc, char** argv)
 {	
-	/* TODO: Install a signal handler (see signaldemo.cpp sample file).
-
 	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
+	signal(SIGINT, ctrlCSignal); 
 
 	/* Initialize */
+	printf("~Calling recv main~\n");
 	init(shmid, msqid, sharedMemPtr);
 
 	/* Go to the main loop */
 	mainLoop();
 
-	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
+	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/	
 	cleanUp(shmid, msqid, sharedMemPtr);
 	return 0;
 }
