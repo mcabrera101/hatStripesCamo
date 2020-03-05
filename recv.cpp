@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "msg.h"    /* For the message struct */
+#include <iostream>
+
 
 
 /* The size of the shared memory chunk */
@@ -160,6 +162,11 @@ void ctrlCSignal(int signal)
 	/* Free system V resources */
 	cleanUp(shmid, msqid, sharedMemPtr);
 }
+void signalHandlerFunc(int arg)
+{
+	fprintf(stderr, "Deleting message queues and shared memory.\n");
+	ctrlCSignal(arg);
+}
 
 int main(int argc, char** argv)
 {	
@@ -167,8 +174,14 @@ int main(int argc, char** argv)
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
+<<<<<<< HEAD
  	 */
 	signal(SIGINT, ctrlCSignal); 
+=======
+ 	 */	
+	signal(SIGINT, signalHandlerFunc); 
+
+>>>>>>> f47e1f47791ffdff125a8ce2d21ac377413e7055
 
 	/* Initialize */
 	printf("~Calling recv main~\n");
