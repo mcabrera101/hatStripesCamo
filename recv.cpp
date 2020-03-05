@@ -42,7 +42,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-        printf("Generating key\n");
+  printf("Generating key\n");
  	key_t key = ftok("keyfile.txt", 'a');
 
 
@@ -50,16 +50,16 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
  	printf("Getting shared memory ID\n");
  	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
-        /* TODO: Attach to the shared memory */
+  /* TODO: Attach to the shared memory */
  	printf("Attaching to shared memory\n");
  	sharedMemPtr = shmat(shmid, (void*)0, 0);
 
-        /* TODO: Attach to the message queue */
+  /* TODO: Attach to the message queue */
  	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
  	printf("Attaching to message queue\n");
  	msqid = msgget(key, 0666 | IPC_CREAT);
 
-        printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
+  printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
 }
 
 
@@ -96,8 +96,9 @@ void mainLoop()
 	rcvMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp);
 
 	message sndMsg;
-	
+
 	//Receiving message from sender
+  printf("Receiving message");
 	msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), 1, 0);
 
 	/* Keep receiving until the sender set the size to 0, indicating that
@@ -119,10 +120,9 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case).
  			 */
+      printf("Sending message");
 			sndMsg.mtype = RECV_DONE_TYPE;
 			msgsnd(msqid, &sndMsg, sndMsg.size, 0);
-
-
 		}
 		/* We are done */
 		else
@@ -132,8 +132,6 @@ void mainLoop()
 		}
 	}
 }
-
-
 
 /**
  * Perfoms the cleanup functions
@@ -160,37 +158,29 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 void ctrlCSignal(int signal)
 {
 	/* Free system V resources */
+  fprintf(stderr, "Deleting message queues and shared memory.\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
-}
-void signalHandlerFunc(int arg)
-{
-	fprintf(stderr, "Deleting message queues and shared memory.\n");
-	ctrlCSignal(arg);
 }
 
 int main(int argc, char** argv)
-{	
+{
 	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
-<<<<<<< HEAD
  	 */
-	signal(SIGINT, ctrlCSignal); 
-=======
- 	 */	
-	signal(SIGINT, signalHandlerFunc); 
-
->>>>>>> f47e1f47791ffdff125a8ce2d21ac377413e7055
+	signal(SIGINT, ctrlCSignal);
 
 	/* Initialize */
 	printf("~Calling recv main~\n");
+  printf("~Calling init~\n");
 	init(shmid, msqid, sharedMemPtr);
 
 	/* Go to the main loop */
+  printf("~Calling mainLoop~\n");
 	mainLoop();
 
-	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/	
+	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
 	cleanUp(shmid, msqid, sharedMemPtr);
 	return 0;
 }
