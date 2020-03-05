@@ -174,12 +174,10 @@ int main(int argc, char** argv)
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-<<<<<<< HEAD
+
 	signal(SIGINT, ctrlCSignal); 
 
-=======
-	signal(SIGINT, ctrlCSignal);
->>>>>>> 058e0a6483d899650c993b5afa32a4beb453c9ca
+
 
 	/* Initialize */
 	printf("~Calling recv main~\n");
