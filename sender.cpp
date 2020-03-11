@@ -107,18 +107,16 @@ void send(const char* fileName)
  		 * (message of type SENDER_DATA_TYPE)
  		 */
 		sndMsg.mtype = SENDER_DATA_TYPE;
-
 		printf("Sending message\n");
-		msgsnd(msqid, &sndMsg, sndMsg.size, 0);
+		msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0);
 
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
  		 * that he finished saving the memory chunk.
  		 */
 		printf("Waiting for message...\n");
-		msgrcv(msqid, &rcvMsg, rcvMsg.size, 1, 0);
+		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), RECV_DONE_TYPE, 0);
 		printf("Message received\n");
 	}
-
 
 	/** TODO: once we are out of the above loop, we have finished sending the file.
  	  * Let's tell the receiver that we have nothing more to send. We will do this by
@@ -126,9 +124,9 @@ void send(const char* fileName)
 	  */
 	sndMsg.mtype = SENDER_DATA_TYPE;
 	sndMsg.size = 0;
-	msgsnd(msqid, &sndMsg, sndMsg.size, 0);
+	msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0);
 	//printf("Sender:");
-	
+
 
 	/* Close the file */
 	fclose(fp);

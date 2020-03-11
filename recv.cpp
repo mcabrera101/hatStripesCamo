@@ -92,23 +92,23 @@ void mainLoop()
      * "recvfile"
      */
 	message rcvMsg;
-	rcvMsg.mtype = SENDER_DATA_TYPE;
-	rcvMsg.size = fread(sharedMemPtr, sizeof(char), SHARED_MEMORY_CHUNK_SIZE, fp);
-	//printf("Receiver:");
-	//rcvMsg.print(fp);
+  msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
+  msgSize = rcvMsg.size;
 
-	message sndMsg;
+  message sndMsg;
 
-	//Receiving message from sender
-  printf("Receiving message");
-	msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), 1, 0);
+  //Debug stuff; delete later
+  printf("rcvMsg.size: %d \n",rcvMsg.size);
+  //msgSize=0;
 
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
  	 */
-
 	while(msgSize != 0)
 	{
+    printf("Receiving message");
+    msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
+    msgSize = rcvMsg.size;
 		/* If the sender is not telling us that we are done, then get to work */
 		if(msgSize != 0)
 		{
@@ -122,9 +122,9 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case).
  			 */
+      sndMsg.mtype = RECV_DONE_TYPE;
       printf("Sending message");
-			sndMsg.mtype = RECV_DONE_TYPE;
-			msgsnd(msqid, &sndMsg, sndMsg.size, 0);
+			msgsnd(msqid, &sndMsg, 0, 0);
 		}
 		/* We are done */
 		else
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
  	 * in ctrlCSignal().
  	 */
 
-	signal(SIGINT, ctrlCSignal); 
+	signal(SIGINT, ctrlCSignal);
 
 
 
