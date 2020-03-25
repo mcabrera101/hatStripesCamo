@@ -8,4 +8,9 @@ Christopher Weichlein
 
 Program language is C++
 
-Use the make command in the directory to run the program
+Program exeuction:
+1. Open a terminal in the directory
+2. Type make and hit enter
+3. Open another terminal in the directory
+4. Type ./receiver.out and hit enter
+

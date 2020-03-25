@@ -33,24 +33,19 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-
-	printf("Generating key\n");
 	key_t key = ftok("keyfile.txt", 'a');
 
 	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
-	printf("Getting shared memory ID\n");
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
   /* TODO: Attach to the shared memory */
-	printf("Attaching to shared memory\n");
 	sharedMemPtr = shmat(shmid, (void*)0, 0);
 
   /* TODO: Attach to the message queue */
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
-	printf("Attaching to message queue\n");
 	msqid = msgget(key, 0666 | IPC_CREAT);
 
-  printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
+  printf("[DEBUG] Shared ID: %d; Message Queue ID: %d\n", shmid, msqid); //Debug of ids
 }
 
 /**
@@ -108,13 +103,15 @@ void send(const char* fileName)
  		 */
 		sndMsg.mtype = SENDER_DATA_TYPE;
 		printf("Sending message\n");
-		msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0);
+		msgsnd(msqid, &sndMsg, sizeof(message) - sizeof(long), 0);
 
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
  		 * that he finished saving the memory chunk.
  		 */
 		printf("Waiting for message...\n");
-		msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), RECV_DONE_TYPE, 0);
+		while(rcvMsg.mtype != RECV_DONE_TYPE){
+			msgrcv(msqid, &rcvMsg, sizeof(message) - sizeof(long), RECV_DONE_TYPE, 0);
+		}
 		printf("Message received\n");
 	}
 
@@ -124,7 +121,7 @@ void send(const char* fileName)
 	  */
 	sndMsg.mtype = SENDER_DATA_TYPE;
 	sndMsg.size = 0;
-	msgsnd(msqid, &sndMsg, sizeof(sndMsg), 0);
+	msgsnd(msqid, &sndMsg, sizeof(message) - sizeof(long), 0);
 	//printf("Sender:");
 
 

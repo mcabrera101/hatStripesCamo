@@ -42,21 +42,17 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    is unique system-wide among all System V objects. Two objects, on the other hand,
 		    may have the same key.
 	 */
-  printf("Generating key\n");
  	key_t key = ftok("keyfile.txt", 'a');
 
 
  	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
- 	printf("Getting shared memory ID\n");
  	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
   /* TODO: Attach to the shared memory */
- 	printf("Attaching to shared memory\n");
  	sharedMemPtr = shmat(shmid, (void*)0, 0);
 
   /* TODO: Attach to the message queue */
  	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
- 	printf("Attaching to message queue\n");
  	msqid = msgget(key, 0666 | IPC_CREAT);
 
   printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
@@ -91,24 +87,22 @@ void mainLoop()
      * NOTE: the received file will always be saved into the file called
      * "recvfile"
      */
-	message rcvMsg;
-  msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
-  msgSize = rcvMsg.size;
-
-  message sndMsg;
-
-  //Debug stuff; delete later
-  printf("rcvMsg.size: %d \n",rcvMsg.size);
-  //msgSize=0;
+  message rcvMsg;
+  //msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
+  //msgSize = rcvMsg.size;
 
 	/* Keep receiving until the sender set the size to 0, indicating that
  	 * there is no more data to send
  	 */
+  msgSize=1;
 	while(msgSize != 0)
 	{
-    printf("Receiving message");
-    msgrcv(msqid, &rcvMsg, sizeof(rcvMsg), SENDER_DATA_TYPE, 0);
+    printf("Receiving message\n");
+    msgrcv(msqid, &rcvMsg, sizeof(message) - sizeof(long), SENDER_DATA_TYPE, 0);
     msgSize = rcvMsg.size;
+
+    printf("%d", msgSize);
+
 		/* If the sender is not telling us that we are done, then get to work */
 		if(msgSize != 0)
 		{
@@ -122,6 +116,7 @@ void mainLoop()
  			 * I.e. send a message of type RECV_DONE_TYPE (the value of size field
  			 * does not matter in this case).
  			 */
+      message sndMsg;
       sndMsg.mtype = RECV_DONE_TYPE;
       printf("Sending message");
 			msgsnd(msqid, &sndMsg, 0, 0);
@@ -174,10 +169,7 @@ int main(int argc, char** argv)
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
  	 */
-
 	signal(SIGINT, ctrlCSignal);
-
-
 
 	/* Initialize */
 	printf("~Calling recv main~\n");
@@ -189,6 +181,7 @@ int main(int argc, char** argv)
 	mainLoop();
 
 	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
+  printf("~Calling cleanUp~\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
 	return 0;
 }

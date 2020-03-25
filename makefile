@@ -1,5 +1,5 @@
 main: sender receiver
-	./sender.out msg.txt && ./receiver.out
+	./sender.out msg.txt
 
 sender:	sender.cpp
 	g++ -o sender.out sender.cpp
