@@ -101,8 +101,6 @@ void mainLoop()
     msgrcv(msqid, &rcvMsg, sizeof(message) - sizeof(long), SENDER_DATA_TYPE, 0);
     msgSize = rcvMsg.size;
 
-    printf("%d", msgSize);
-
 		/* If the sender is not telling us that we are done, then get to work */
 		if(msgSize != 0)
 		{
@@ -118,7 +116,7 @@ void mainLoop()
  			 */
       message sndMsg;
       sndMsg.mtype = RECV_DONE_TYPE;
-      printf("Sending message");
+      printf("Sending message\n");
 			msgsnd(msqid, &sndMsg, 0, 0);
 		}
 		/* We are done */
