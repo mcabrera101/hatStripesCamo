@@ -45,7 +45,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 	msqid = msgget(key, 0666 | IPC_CREAT);
 
-  printf("[DEBUG] Shared ID: %d; Message Queue ID: %d\n", shmid, msqid); //Debug of ids
+  //printf("[DEBUG] Shared ID: %d; Message Queue ID: %d\n", shmid, msqid); //Debug of ids
 }
 
 /**
@@ -102,17 +102,17 @@ void send(const char* fileName)
  		 * (message of type SENDER_DATA_TYPE)
  		 */
 		sndMsg.mtype = SENDER_DATA_TYPE;
-		printf("Sending message\n");
+		printf("[Sender] Sending message\n");
 		msgsnd(msqid, &sndMsg, sizeof(message) - sizeof(long), 0);
 
 		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
  		 * that he finished saving the memory chunk.
  		 */
-		printf("Waiting for message...\n");
+		printf("[Sender] Waiting for response...\n");
 		while(rcvMsg.mtype != RECV_DONE_TYPE){
 			msgrcv(msqid, &rcvMsg, sizeof(message) - sizeof(long), RECV_DONE_TYPE, 0);
 		}
-		printf("Message received\n");
+		//printf("Message received\n");
 	}
 
 	/** TODO: once we are out of the above loop, we have finished sending the file.
@@ -142,16 +142,16 @@ int main(int argc, char** argv)
 	}
 
 	/* Connect to shared memory and the message queue */
-	printf("~Calling sender main~\n");
-	printf("~Calling init~\n");
+	printf("[Sender] Calling main\n");
+	//printf("Calling init\n");
 	init(shmid, msqid, sharedMemPtr);
 
 	/* Send the file */
-	printf("~Calling send~\n");
+	//printf("~Calling send~\n");
 	send(argv[1]);
 
 	/* Cleanup */
-	printf("~Calling cleanUp~\n");
+	//printf("~Calling cleanUp~\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
 
 	return 0;
