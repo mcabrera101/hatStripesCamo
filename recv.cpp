@@ -55,7 +55,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
  	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
  	msqid = msgget(key, 0666 | IPC_CREAT);
 
-  printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
+  //printf("[DEBUG] Shared ID: %d Message Queue ID: %d\n", shmid, msqid); //Debug of ids
 }
 
 
@@ -97,7 +97,7 @@ void mainLoop()
   msgSize=1;
 	while(msgSize != 0)
 	{
-    printf("Receiving message\n");
+    printf("[Receiver] Receiving message\n");
     msgrcv(msqid, &rcvMsg, sizeof(message) - sizeof(long), SENDER_DATA_TYPE, 0);
     msgSize = rcvMsg.size;
 
@@ -116,7 +116,7 @@ void mainLoop()
  			 */
       message sndMsg;
       sndMsg.mtype = RECV_DONE_TYPE;
-      printf("Sending message\n");
+      printf("[Receiver] Sending response\n");
 			msgsnd(msqid, &sndMsg, 0, 0);
 		}
 		/* We are done */
@@ -138,13 +138,13 @@ void mainLoop()
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
 	/* TODO: Detach from shared memory */
-	printf("Detaching from memory\n");
+	printf("[Receiver] Detaching from memory\n");
 	shmdt(sharedMemPtr);
 	/* TODO: Deallocate the shared memory chunk */
-	printf("Deallocating from shared memory\n");
+	printf("[Receiver] Deallocating from shared memory\n");
 	shmctl(shmid,IPC_RMID,NULL);
 	/* TODO: Deallocate the message queue */
-	printf("Deallocating message queue\n");
+	printf("[Receiver] Deallocating message queue\n");
 	msgctl(msqid,IPC_RMID,NULL);
 }
 
@@ -156,7 +156,7 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 void ctrlCSignal(int signal)
 {
 	/* Free system V resources */
-  fprintf(stderr, "Deleting message queues and shared memory.\n");
+  fprintf(stderr, "[Receiver] Deleting message queues and shared memory.\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
 }
 
@@ -170,16 +170,16 @@ int main(int argc, char** argv)
 	signal(SIGINT, ctrlCSignal);
 
 	/* Initialize */
-	printf("~Calling recv main~\n");
-  printf("~Calling init~\n");
+	printf("[Receiver] Calling main\n");
+    //printf("~Calling init~\n");
 	init(shmid, msqid, sharedMemPtr);
 
 	/* Go to the main loop */
-  printf("~Calling mainLoop~\n");
+    //printf("~Calling mainLoop~\n");
 	mainLoop();
 
 	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
-  printf("~Calling cleanUp~\n");
+    //printf("~Calling cleanUp~\n");
 	cleanUp(shmid, msqid, sharedMemPtr);
 	return 0;
 }
