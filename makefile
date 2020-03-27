@@ -11,4 +11,4 @@ clean:
 	rm -f sender.out receiver.out recvfile.txt
 
 tar:
-	tar cvf CPSC351_Cabrera_Ruppert_Shi_Weichlein.tar *.cpp *.h makefile
+	tar cvf CPSC351_Cabrera_Ruppert_Shi_Weichlein.tar *.cpp *.h makefile *.txt
