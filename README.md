@@ -25,4 +25,4 @@ Chris Weichlein - Sender, Design Doc
 
 Stanley Shi - Sender, Receiver, Design Doc
 
-Miguel Cabrera - Design Doc, Readme
+Miguel Cabrera - Design Doc, Readme, Receiver
