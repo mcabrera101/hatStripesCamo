@@ -19,10 +19,10 @@ Program exeuction:
 
 Contributions:
 
-Nate Ruppert - Makefile, Sender
+Nate Ruppert 
 
-Chris Weichlein - Sender, Design Doc
+Chris Weichlein 
 
-Stanley Shi - Sender, Receiver, Design Doc
+Stanley Shi
 
-Miguel Cabrera - Design Doc, Readme, Receiver
+Miguel Cabrera 
