@@ -1,18 +1,29 @@
 #include <iostream>
 #include <fstream>
-
+#include <string>
 using namespace std;
 
-const int MAX_MEMORY_SIZE = 30000;
+class Process{
+public:
+    //Information obtained from workload file
+    int processID;
+    int arrivalTime;
+    int lifetime;
+    int memoryRequirement;
+};
 
-int memorySize, pageSize;
+const int MAX_MEMORY_SIZE = 30000;
+int memorySize, pageSize, numberOfProcesses;
+string fileName;
+vector<Process> processList;
 
 int main(){
-  getInput();
+  getInput();            //Gets user input for memory size and page size
+  assignProcesses();     //Gets information for each process
 }
 
+//Gets user input for memory size and page size
 void getInput(){
-  //Get user input
   cout << "Enter memory size(0-30000): ";
   cin >> memorySize;
   cout << "Enter page size: ";
@@ -31,4 +42,47 @@ void getInput(){
     cout<<"Error: Invalid input. Given page size does not evenly divide given memory size"<<endl;
     getInput();
   }
+}
+
+//Obtains information from a workload file for each process
+void assignProcesses() {
+	cout << "Enter the name of the workload file: ";
+	cin >> fileName;
+
+	ifstream myFile;
+	myFile.open(fileName);
+
+	if(!myFile){
+		perror("Failed to open file. Please try again.");
+		assignProcesses();
+	}
+
+	if (myFile.is_open()) {
+		//Get number of processes
+		myFile >> numberOfProcesses;
+
+		processList.resize(numberOfProcesses);
+
+		for (int i = 0; i < numberOfProcesses; i++) {
+			//Get process ID
+			myFile >> processList[i].processID;
+
+			//Get arriving time and life time
+			myFile >> processList[i].arrivalTime >> proc_list[i].lifetime;
+
+			//Get memory requirement
+			int piecesOfMemory = 0;          //Number of memory pieces; we need to sum those piecces
+			int temp;                        //Holds the value of a memory piece
+			int memoryRequirement = 0;       //Equal to the sum of our memory pieces
+
+			myFile >> piecesOfMemory;
+			for (int j = 0; j < piecesOfMemory; j++) {
+				myFile >> temp;
+				memoryRequirement += temp;    //Adds the value of a piece to the memory requirement
+			}
+			processList[i].memoryRequirement = sum;
+		}
+	}
+	//close file
+	myFile.close();
 }
