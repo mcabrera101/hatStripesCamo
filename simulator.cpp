@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 using namespace std;
 
 class Process{
@@ -10,17 +11,15 @@ public:
     int arrivalTime;
     int lifetime;
     int memoryRequirement;
+
+    int memoryAdmissionTime;
+    int completionTime;
 };
 
 const int MAX_MEMORY_SIZE = 30000;
 int memorySize, pageSize, numberOfProcesses;
 string fileName;
 vector<Process> processList;
-
-int main(){
-  getInput();            //Gets user input for memory size and page size
-  assignProcesses();     //Gets information for each process
-}
 
 //Gets user input for memory size and page size
 void getInput(){
@@ -68,7 +67,7 @@ void assignProcesses() {
 			myFile >> processList[i].processID;
 
 			//Get arriving time and life time
-			myFile >> processList[i].arrivalTime >> proc_list[i].lifetime;
+			myFile >> processList[i].arrivalTime >> processList[i].lifetime;
 
 			//Get memory requirement
 			int piecesOfMemory = 0;          //Number of memory pieces; we need to sum those piecces
@@ -80,9 +79,13 @@ void assignProcesses() {
 				myFile >> temp;
 				memoryRequirement += temp;    //Adds the value of a piece to the memory requirement
 			}
-			processList[i].memoryRequirement = sum;
+			processList[i].memoryRequirement = memoryRequirement;
 		}
 	}
-	//close file
 	myFile.close();
+}
+
+int main(){
+  getInput();            //Gets user input for memory size and page size
+  assignProcesses();     //Gets information for each process
 }
