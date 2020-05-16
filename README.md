@@ -1,7 +1,10 @@
 # hatStripesCamo
 Section 03
+
 Miguel Cabrera Miguel.cabrera@csu.fullerton.edu
+
 Stanley Shi stanleyshi@csu.fullerton.edu
+
 Christopher Weichlein  cweichlein@csu.fullerton.edu
 
 Program language is C++
