@@ -19,10 +19,10 @@ Program exeuction:
 
 Contributions:
 
-Nate Ruppert 
+Nate Ruppert I/O
 
-Chris Weichlein 
+Chris Weichlein I/O
 
-Stanley Shi
+Stanley Shi I/O
 
-Miguel Cabrera 
+Miguel Cabrera I/O
