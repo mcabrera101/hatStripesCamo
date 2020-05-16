@@ -27,6 +27,7 @@ void assignProcesses();
 int main(){
   getInput();            //Gets user input for memory size and page size
   assignProcesses();     //Gets information for each process
+
 }
 
 //Gets user input for memory size and page size
