@@ -15,7 +15,7 @@ int main()
 		cout<<"Enter an option:\n0:End\n1:Input Data\n->";
 		cin>>num;
 	}	
-	cout<<"Bye!"<<endl;
+	cout<<"Adios!"<<endl;
 	return 0;
 }
 
