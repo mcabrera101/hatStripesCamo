@@ -16,6 +16,9 @@ Program exeuction:
 3. Program will execute immediately after make completes
 
 Contributions:
+
 Miguel Cabrera- simulator.cpp
+
 Stanley Shi- simulator.cpp
+
 Chris Weichlein- makefile and simulator.cpp
