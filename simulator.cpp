@@ -68,27 +68,29 @@ void assignProcesses() {
 	if (myFile.is_open()) {
 		//Get number of processes
 		myFile >> numberOfProcesses;
-
 		processList.resize(numberOfProcesses);
-
+		cout<<"Number of processes: "<<numberOfProcesses<<endl;
 		for (int i = 0; i < numberOfProcesses; i++) {
 			//Get process ID
 			myFile >> processList[i].processID;
-
+			cout<<"process ID: "<<processList[i].processID<<endl;
 			//Get arriving time and life time
 			myFile >> processList[i].arrivalTime >> processList[i].lifetime;
-
+			cout<<"Arrival time: "<<processList[i].arrivalTime<<endl;
+			cout<<"Lifetime: "<<processList[i].lifetime<<endl;
 			//Get memory requirement
 			int piecesOfMemory = 0;          //Number of memory pieces; we need to sum those piecces
 			int temp;                        //Holds the value of a memory piece
 			int memoryRequirement = 0;       //Equal to the sum of our memory pieces
 
 			myFile >> piecesOfMemory;
+			cout<<"piecesOfMemory: "<<piecesOfMemory<<endl;
 			for (int j = 0; j < piecesOfMemory; j++) {
 				myFile >> temp;
 				memoryRequirement += temp;    //Adds the value of a piece to the memory requirement
 			}
 			processList[i].memoryRequirement = memoryRequirement;
+			cout<<"Memory requirement: "<<memoryRequirement<<endl;
 		}
 	}
 	myFile.close();
