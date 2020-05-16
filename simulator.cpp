@@ -5,7 +5,7 @@
 using namespace std;
 
 class Process{
-public:
+  public:
     //Information obtained from workload file
     int processID;
     int arrivalTime;
@@ -16,18 +16,32 @@ public:
     int completionTime;
 };
 
+struct processQueue {
+	int capacity;
+	int size;
+	int front;
+	int rear;
+	vector<PROCESS> contents;
+};
+
 const int MAX_MEMORY_SIZE = 30000;
 int memorySize, pageSize, numberOfProcesses;
+long clock;
 string fileName;
 vector<Process> processList;
+processQueue waitQueue;
 
 void getInput();
 void assignProcesses();
+void writeToFile();
 
 int main(){
   getInput();            //Gets user input for memory size and page size
   assignProcesses();     //Gets information for each process
+  inputQueue = createProcessQueue(numberOfProcesses);
 
+  mainLoop();
+  writeToFile();
 }
 
 //Gets user input for memory size and page size
@@ -94,4 +108,22 @@ void assignProcesses() {
 		}
 	}
 	myFile.close();
+}
+
+processQueue createProcessQueue(int length) {
+	processQueue q;
+	q.size=0;
+	q.capacity=length;
+	q.front=0;
+	q.rear=-1;
+  q.elements.resize(length);
+	return q;
+}
+
+void writeToFile(){
+  ofstream outputFile;
+  outputFile.open("out.txt");
+  for(int x=0; x<numberOfProcesses;x++){
+    outputFile<<processList[x].processID;
+  }
 }
