@@ -21,6 +21,14 @@ int memorySize, pageSize, numberOfProcesses;
 string fileName;
 vector<Process> processList;
 
+void getInput();
+void assignProcesses();
+
+int main(){
+  getInput();            //Gets user input for memory size and page size
+  assignProcesses();     //Gets information for each process
+}
+
 //Gets user input for memory size and page size
 void getInput(){
   cout << "Enter memory size(0-30000): ";
@@ -83,9 +91,4 @@ void assignProcesses() {
 		}
 	}
 	myFile.close();
-}
-
-int main(){
-  getInput();            //Gets user input for memory size and page size
-  assignProcesses();     //Gets information for each process
 }
