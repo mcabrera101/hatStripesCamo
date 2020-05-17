@@ -2,6 +2,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
+#include <deque>
+#include <iomanip>
 using namespace std;
 
 class Process{
@@ -14,37 +17,50 @@ class Process{
 
     int memoryAdmissionTime;
     int completionTime;
+
+    Process(int pI =0,int aT=0,int l=0,int mR=0,int mA=0, int cT=0){
+    	this-> processID = pI;
+    	this-> arrivalTime = aT;
+    	this-> lifetime = l;
+    	this-> memoryRequirement = mR;
+    	this-> memoryAdmissionTime = mA;
+    	this-> completionTime=cT;
+    }
 };
 
-struct processQueue {
-	int capacity;
-	int size;
-	int front;
-	int rear;
-	vector<Process> contents;
-};
+// struct processQueue {
+// 	int capacity;
+// 	int size;
+// 	int front;
+// 	int rear;
+// 	vector<Process> contents;
+// };
 
 const int MAX_MEMORY_SIZE = 30000;
 const int MAX_TIME = 100000;
-int memorySize, pageSize, numberOfProcesses;
+int memorySize, pageSize, numberOfProcesses, activeProcesses;
 long clockTime;
 string fileName;
 vector<Process> processList;
-processQueue inputQueue;
+deque<Process> inputQueue;
+map<int,Process> memory;
 
 //Prototypes
 void getInput();
 void assignProcesses();
-processQueue createProcessQueue();
+//processQueue createProcessQueue();
 void mainLoop();
 void enqueueArrivedProcess();
-processQueue enqueueProcess(processQueue, Process);
+//processQueue enqueueProcess(processQueue, Process);
 void writeToFile(string);
+void inputQCount();
+void addmitter(int);
+void completter(int);
 
 int main(){
   getInput();            //Gets user input for memory size and page size
   assignProcesses();     //Gets information for each process
-  inputQueue = createProcessQueue();  //Puts our processes in a queue
+  //inputQueue = createProcessQueue();  //Puts our processes in a queue
   mainLoop();
 }
 
@@ -115,24 +131,27 @@ void assignProcesses() {
 }
 
 //Creates a queue for our processes
-processQueue createProcessQueue() {
-	processQueue q;
-	q.size=0;
-	q.capacity=numberOfProcesses;
-	q.front=0;
-	q.rear=-1;
-  q.contents.resize(numberOfProcesses);
-	return q;
-}
+// processQueue createProcessQueue() {
+// 	processQueue q;
+// 	q.size=0;
+// 	q.capacity=numberOfProcesses;
+// 	q.front=0;
+// 	q.rear=-1;
+//   q.contents.resize(numberOfProcesses);
+// 	return q;
+// }
 
 void mainLoop(){
   clockTime=0;
 
   while(true){
+  	
     enqueueArrivedProcess();
+    addmitter(clockTime);
+    completter(clockTime);
 
     clockTime++;
-    if(clockTime>MAX_TIME){
+    if(clockTime>MAX_TIME ||memory.empty()){
       break;
     }
   }
@@ -143,20 +162,25 @@ void enqueueArrivedProcess() {
 	for (int x = 0; x < numberOfProcesses; x++) {
 		proc = processList[x];
 		if (proc.arrivalTime == clockTime) {
-      string message = "t = " + to_string(clockTime) + ": Process " + to_string(proc.processID) + " arrives";
-      cout<<message<<endl;
-      writeToFile(message);
-			inputQueue = enqueueProcess(inputQueue, proc);
+		    string message = "t = " + to_string(clockTime) + ": Process " + to_string(proc.processID) + " arrives";
+		    cout<<endl << message<<endl;
+
+		    writeToFile(message);
+			//inputQueue = enqueueProcess(inputQueue, proc);
+			inputQueue.push_back(proc);
+			inputQCount();
+
 		}
+
 	}
 }
 
-processQueue enqueueProcess(processQueue q, Process proc){
-  q.size++;
-	q.rear++;
-  q.contents[q.rear] = proc;
-  return q;
-}
+// processQueue enqueueProcess(processQueue q, Process proc){
+//   q.size++;
+// 	q.rear++;
+//   q.contents[q.rear] = proc;
+//   return q;
+// }
 
 void writeToFile(string output){
   ofstream outputFile;
@@ -164,3 +188,44 @@ void writeToFile(string output){
   outputFile<<output<<endl;
   outputFile.close();
 }
+void inputQCount(){  //prints current processes on the inputQueue
+	if (inputQueue.size() > 0){	
+		cout<< "	"<< "Input Queue: [";
+			for (int i =0 ; i < inputQueue.size(); i++){
+				if(inputQueue[i].processID !=0){
+					cout<<" " << inputQueue[i].processID;
+				}
+			}
+		cout<< "]" <<endl;
+	}
+
+}
+void addmitter(int clockTime){ // admits if there is enough memory and there is a process in the queue
+	Process proc;
+	if(inputQueue.size() > 0 ){
+		if(inputQueue.front().memoryRequirement <= memorySize){
+			proc = inputQueue.front();
+
+			memorySize -= proc.memoryRequirement;
+			proc.memoryAdmissionTime = clockTime;
+			proc.completionTime = proc.memoryAdmissionTime + proc.lifetime;
+
+			memory.insert(std::pair<int,Process>(proc.processID, proc));
+			cout << "	"<< "MM moves Process "<< proc.processID << " to memory" << endl;
+			inputQueue.pop_front();
+
+		}
+	}
+}
+void completter(int clockTime){
+	for(map<int,Process>::const_iterator it= memory.begin(); it != memory.end(); it++){
+		if(it->second.completionTime == clockTime){
+			cout << "	"<< "Process " <<it->second.processID << " Complete" << endl;
+			memory.erase(it);
+
+		}
+	}
+
+
+}
+

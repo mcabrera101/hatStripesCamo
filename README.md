@@ -17,7 +17,7 @@ Program exeuction:
 
 Contributions:
 
-Miguel Cabrera- simulator.cpp
+Miguel Cabrera- simulator.cpp, designfile
 
 Stanley Shi- simulator.cpp
 
