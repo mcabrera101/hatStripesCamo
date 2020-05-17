@@ -30,14 +30,6 @@ class Process{
     }
 };
 
-// struct processQueue {
-// 	int capacity;
-// 	int size;
-// 	int front;
-// 	int rear;
-// 	vector<Process> contents;
-// };
-
 const int MAX_MEMORY_SIZE = 30000;
 const int MAX_TIME = 100000;
 int memorySize=1, pageSize =1, numberOfProcesses, activeProcesses;
@@ -49,13 +41,12 @@ map<string,Process> memory;
 vector<int> lower;
 vector<int> upper;
 vector<string> labels;
+
 //Prototypes
 void getInput();
 void assignProcesses();
-//processQueue createProcessQueue();
 void mainLoop();
 void enqueueArrivedProcess();
-//processQueue enqueueProcess(processQueue, Process);
 void writeToFile(string);
 void inputQCount();
 void addmitter(int);
@@ -64,9 +55,8 @@ void labelF();
 
 int main(){
   getInput();            //Gets user input for memory size and page size
-  	labelF();			//Creates labels for memory map
+  labelF();			         //Creates labels for memory map
   assignProcesses();     //Gets information for each process
-  //inputQueue = createProcessQueue();  //Puts our processes in a queue
   mainLoop();
 }
 
@@ -137,22 +127,10 @@ void assignProcesses() {
 	myFile.close();
 }
 
-//Creates a queue for our processes
-// processQueue createProcessQueue() {
-// 	processQueue q;
-// 	q.size=0;
-// 	q.capacity=numberOfProcesses;
-// 	q.front=0;
-// 	q.rear=-1;
-//   q.contents.resize(numberOfProcesses);
-// 	return q;
-// }
-
 void mainLoop(){
   clockTime=0;
 
   while(true){
-  	
     enqueueArrivedProcess();
     addmitter(clockTime);
     completter(clockTime);
@@ -170,24 +148,16 @@ void enqueueArrivedProcess() {
 		proc = processList[x];
 		if (proc.arrivalTime == clockTime) {
 		    string message = "t = " + to_string(clockTime) + ": Process " + to_string(proc.processID) + " arrives";
-		    cout<<endl << message<<endl;
+		    cout<<endl<<message<<endl;
 
 		    writeToFile(message);
-			//inputQueue = enqueueProcess(inputQueue, proc);
-			inputQueue.push_back(proc);
-			inputQCount();
+			  inputQueue.push_back(proc);
+			  inputQCount();
 
 		}
 
 	}
 }
-
-// processQueue enqueueProcess(processQueue q, Process proc){
-//   q.size++;
-// 	q.rear++;
-//   q.contents[q.rear] = proc;
-//   return q;
-// }
 
 void writeToFile(string output){
   ofstream outputFile;
@@ -195,20 +165,27 @@ void writeToFile(string output){
   outputFile<<output<<endl;
   outputFile.close();
 }
+
 void inputQCount(){  //prints current processes on the inputQueue
-	if (inputQueue.size() > 0){	
-		cout<< "	"<< "Input Queue: [";
+  string output = "  Input Queue: [";
+	if (inputQueue.size() > 0){
+		//cout<< "	"<< "Input Queue: [";
 			for (int i =0 ; i < inputQueue.size(); i++){
 				if(inputQueue[i].processID !=0){
-					cout<<" " << inputQueue[i].processID;
+          output = output + " " + to_string(inputQueue[i].processID);
+					//cout<<" " << inputQueue[i].processID;
 				}
 			}
-		cout<< "]" <<endl;
+		//cout<< "]" <<endl;
+    output = output + "]";
+    cout<<output<<endl;
+    writeToFile(output);
 	}
-
 }
-void addmitter(int clockTime){ // admits if there is enough memory and there is a process in the queue
+
+void addmitter(int clockTime){ //admits if there is enough memory and there is a process in the queue
 	Process proc;
+  string output;
 	if(inputQueue.size() > 0 ){
 		if(inputQueue.front().memoryRequirement <= memorySize){
 			proc = inputQueue.front();
@@ -226,24 +203,33 @@ void addmitter(int clockTime){ // admits if there is enough memory and there is 
 			// }
 			memory.insert(std::pair<string,Process>(to_string(proc.processID), proc));
 
-			
-			cout << "	"<< "MM moves Process "<< proc.processID << " to memory" << endl;
+      output = "  MM moves Process " + to_string(proc.processID) + " to memory";
+      cout<<output<<endl;
+      writeToFile(output);
+			//cout << "	"<< "MM moves Process "<< proc.processID << " to memory" << endl;
 			inputQueue.pop_front();
 			inputQCount();
 
 		}
 	}
 }
+
 void completter(int clockTime){
+  string output;
 	for(map<string,Process>::const_iterator it= memory.begin(); it != memory.end(); it++){
 		if(it->second.completionTime == clockTime){
-			cout << "	"<< "Process " <<it->second.processID << " Complete" << endl;
+			//cout << "  Process " <<it->second.processID << " completes" << endl;
+      output="  Process ";
+      output = output + to_string(it->second.processID) + " completes";
+      cout<<output<<endl;
+
 			memorySize += it->second.memoryRequirement;
 
 
 		}
 	}
 }
+
 void labelF(){
 	int ltemp = 0;
 	int utemp = pageSize-1;
@@ -257,8 +243,5 @@ void labelF(){
 		label = " ";
 		ltemp += pageSize;
 		utemp += pageSize;
-
 	}
-
 }
-

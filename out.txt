@@ -1,8 +1,26 @@
 t = 0: Process 1 arrives
+  Input Queue: [ 1]
 t = 0: Process 2 arrives
+  Input Queue: [ 1 2]
+  MM moves Process 1 to memory
+  Input Queue: [ 2]
+  MM moves Process 2 to memory
 t = 100: Process 3 arrives
+  Input Queue: [ 3]
 t = 100: Process 4 arrives
+  Input Queue: [ 3 4]
+  MM moves Process 3 to memory
+  Input Queue: [ 4]
+  MM moves Process 4 to memory
 t = 200: Process 5 arrives
+  Input Queue: [ 5]
+  MM moves Process 5 to memory
 t = 1200: Process 6 arrives
+  Input Queue: [ 6]
+  MM moves Process 6 to memory
 t = 1500: Process 7 arrives
+  Input Queue: [ 7]
+  MM moves Process 7 to memory
 t = 1600: Process 8 arrives
+  Input Queue: [ 8]
+  MM moves Process 8 to memory
