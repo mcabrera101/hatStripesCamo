@@ -14,15 +14,17 @@ class Process{
     int arrivalTime;
     int lifetime;
     int memoryRequirement;
+    int piecesOfMemory;
 
     int memoryAdmissionTime;
     int completionTime;
 
-    Process(int pI =0,int aT=0,int l=0,int mR=0,int mA=0, int cT=0){
+    Process(int pI =0,int aT=0,int l=0,int mR=0, int p=0, int mA=0, int cT=0){
     	this-> processID = pI;
     	this-> arrivalTime = aT;
     	this-> lifetime = l;
     	this-> memoryRequirement = mR;
+    	this-> piecesOfMemory = p;
     	this-> memoryAdmissionTime = mA;
     	this-> completionTime=cT;
     }
@@ -38,13 +40,15 @@ class Process{
 
 const int MAX_MEMORY_SIZE = 30000;
 const int MAX_TIME = 100000;
-int memorySize, pageSize, numberOfProcesses, activeProcesses;
+int memorySize=1, pageSize =1, numberOfProcesses, activeProcesses;
 long clockTime;
 string fileName;
 vector<Process> processList;
 deque<Process> inputQueue;
-map<int,Process> memory;
-
+map<string,Process> memory;
+vector<int> lower;
+vector<int> upper;
+vector<string> labels;
 //Prototypes
 void getInput();
 void assignProcesses();
@@ -56,9 +60,11 @@ void writeToFile(string);
 void inputQCount();
 void addmitter(int);
 void completter(int);
+void labelF();
 
 int main(){
   getInput();            //Gets user input for memory size and page size
+  	labelF();			//Creates labels for memory map
   assignProcesses();     //Gets information for each process
   //inputQueue = createProcessQueue();  //Puts our processes in a queue
   mainLoop();
@@ -124,6 +130,7 @@ void assignProcesses() {
 				memoryRequirement += temp;    //Adds the value of a piece to the memory requirement
 			}
 			processList[i].memoryRequirement = memoryRequirement;
+			processList[i].piecesOfMemory = piecesOfMemory;
 			cout<<"Memory requirement: "<<memoryRequirement<<endl;
 		}
 	}
@@ -151,7 +158,7 @@ void mainLoop(){
     completter(clockTime);
 
     clockTime++;
-    if(clockTime>MAX_TIME ||memory.empty()){
+    if(clockTime>MAX_TIME ||(memory.empty() && inputQueue.empty())){
       break;
     }
   }
@@ -209,23 +216,49 @@ void addmitter(int clockTime){ // admits if there is enough memory and there is 
 			memorySize -= proc.memoryRequirement;
 			proc.memoryAdmissionTime = clockTime;
 			proc.completionTime = proc.memoryAdmissionTime + proc.lifetime;
+			// if (proc.memoryRequirement>pageSize){
+			// 	for (int i=0 ; i<pr; i++){
+			// 	memory.insert(std::pair<string,Process>(labels[i], proc));
+			// 	}
+			// }
+			// else{
+			// 	memory.insert(std::pair<string,Process>(labels., proc));
+			// }
+			memory.insert(std::pair<string,Process>(to_string(proc.processID), proc));
 
-			memory.insert(std::pair<int,Process>(proc.processID, proc));
+			
 			cout << "	"<< "MM moves Process "<< proc.processID << " to memory" << endl;
 			inputQueue.pop_front();
+			inputQCount();
 
 		}
 	}
 }
 void completter(int clockTime){
-	for(map<int,Process>::const_iterator it= memory.begin(); it != memory.end(); it++){
+	for(map<string,Process>::const_iterator it= memory.begin(); it != memory.end(); it++){
 		if(it->second.completionTime == clockTime){
 			cout << "	"<< "Process " <<it->second.processID << " Complete" << endl;
-			memory.erase(it);
+			memorySize += it->second.memoryRequirement;
+
 
 		}
 	}
+}
+void labelF(){
+	int ltemp = 0;
+	int utemp = pageSize-1;
+	double l = memorySize/pageSize;
+	string label = " ";
+	for(int i = 0;i<l; i ++){
+		lower.push_back(ltemp);
+		upper.push_back(utemp);
+		label = to_string(lower[i]) + "-" + to_string(upper[i]);
+		labels.push_back(label);
+		label = " ";
+		ltemp += pageSize;
+		utemp += pageSize;
 
+	}
 
 }
 
