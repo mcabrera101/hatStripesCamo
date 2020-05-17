@@ -44,8 +44,7 @@ void writeToFile(string);
 int main(){
   getInput();            //Gets user input for memory size and page size
   assignProcesses();     //Gets information for each process
-  inputQueue = createProcessQueue();
-
+  inputQueue = createProcessQueue();  //Puts our processes in a queue
   mainLoop();
 }
 
@@ -115,6 +114,7 @@ void assignProcesses() {
 	myFile.close();
 }
 
+//Creates a queue for our processes
 processQueue createProcessQueue() {
 	processQueue q;
 	q.size=0;
@@ -144,7 +144,6 @@ void enqueueArrivedProcess() {
 		proc = processList[x];
 		if (proc.arrivalTime == clockTime) {
       string message = "t = " + to_string(clockTime) + ": Process " + to_string(proc.processID) + " arrives";
-			//cout << "t = " << clockTime << ": Process "	<< proc.processID << " arrives" << endl;
       cout<<message<<endl;
       writeToFile(message);
 			inputQueue = enqueueProcess(inputQueue, proc);
@@ -161,7 +160,7 @@ processQueue enqueueProcess(processQueue q, Process proc){
 
 void writeToFile(string output){
   ofstream outputFile;
-  outputFile.open("out.txt");
+  outputFile.open("out.txt",std::ios_base::app);
   outputFile<<output<<endl;
   outputFile.close();
 }

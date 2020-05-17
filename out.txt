@@ -1,1 +1,8 @@
+t = 0: Process 1 arrives
+t = 0: Process 2 arrives
+t = 100: Process 3 arrives
+t = 100: Process 4 arrives
+t = 200: Process 5 arrives
+t = 1200: Process 6 arrives
+t = 1500: Process 7 arrives
 t = 1600: Process 8 arrives
