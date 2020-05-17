@@ -21,27 +21,32 @@ struct processQueue {
 	int size;
 	int front;
 	int rear;
-	vector<PROCESS> contents;
+	vector<Process> contents;
 };
 
 const int MAX_MEMORY_SIZE = 30000;
+const int MAX_TIME = 100000;
 int memorySize, pageSize, numberOfProcesses;
-long clock;
+long clockTime;
 string fileName;
 vector<Process> processList;
-processQueue waitQueue;
+processQueue inputQueue;
 
+//Prototypes
 void getInput();
 void assignProcesses();
-void writeToFile();
+processQueue createProcessQueue();
+void mainLoop();
+void enqueueArrivedProcess();
+processQueue enqueueProcess(processQueue, Process);
+void writeToFile(string);
 
 int main(){
   getInput();            //Gets user input for memory size and page size
   assignProcesses();     //Gets information for each process
-  inputQueue = createProcessQueue(numberOfProcesses);
+  inputQueue = createProcessQueue();
 
   mainLoop();
-  writeToFile();
 }
 
 //Gets user input for memory size and page size
@@ -110,20 +115,53 @@ void assignProcesses() {
 	myFile.close();
 }
 
-processQueue createProcessQueue(int length) {
+processQueue createProcessQueue() {
 	processQueue q;
 	q.size=0;
-	q.capacity=length;
+	q.capacity=numberOfProcesses;
 	q.front=0;
 	q.rear=-1;
-  q.elements.resize(length);
+  q.contents.resize(numberOfProcesses);
 	return q;
 }
 
-void writeToFile(){
+void mainLoop(){
+  clockTime=0;
+
+  while(true){
+    enqueueArrivedProcess();
+
+    clockTime++;
+    if(clockTime>MAX_TIME){
+      break;
+    }
+  }
+}
+
+void enqueueArrivedProcess() {
+	Process proc;
+	for (int x = 0; x < numberOfProcesses; x++) {
+		proc = processList[x];
+		if (proc.arrivalTime == clockTime) {
+      string message = "t = " + to_string(clockTime) + ": Process " + to_string(proc.processID) + " arrives";
+			//cout << "t = " << clockTime << ": Process "	<< proc.processID << " arrives" << endl;
+      cout<<message<<endl;
+      writeToFile(message);
+			inputQueue = enqueueProcess(inputQueue, proc);
+		}
+	}
+}
+
+processQueue enqueueProcess(processQueue q, Process proc){
+  q.size++;
+	q.rear++;
+  q.contents[q.rear] = proc;
+  return q;
+}
+
+void writeToFile(string output){
   ofstream outputFile;
   outputFile.open("out.txt");
-  for(int x=0; x<numberOfProcesses;x++){
-    outputFile<<processList[x].processID;
-  }
+  outputFile<<output<<endl;
+  outputFile.close();
 }
